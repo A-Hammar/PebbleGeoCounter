@@ -7,11 +7,11 @@
 var UI = require('ui');
 var ajax = require('ajax');
 
-function createCard(title, subtitle) {
+function createCard(subtitle) {
   return new UI.Card({
-    title: title,
+    title: 'Geo Counter',
     subtitle: subtitle
-  })
+  });
 }
 
 /**
@@ -20,36 +20,61 @@ function createCard(title, subtitle) {
 */
 function getLocation() {
   
+  var locationOptions = {
+    enableHighAccuracy: true, 
+    maximumAge: 10000, 
+    timeout: 10000
+  };
+  
   // Location success callback
   function success(pos) {
     var crd = pos.coords;
-    return {
+    console.log('Got position ' + crd.latitude + ' ' + crd.longitude);
+    var position = {
       latitude: crd.latitude, 
       longitude: crd.longitude
     };
+    requestImageNumbers(position);
   }
   
   // Location error callback
   function error(err) {
+    var errorCard = createCard('Error fetching Location');
+    errorCard.show();
   }
   
-  return navigator.geoLocation.getCurrentPosition(success, error);
+  navigator.geolocation.getCurrentPosition(success, error, locationOptions);
+}
+
+function requestImageNumbers(pos) {
+  var URL = 'https://api.flickr.com/services/rest/?';
+  var method = '&method=flickr.photos.search';
+  var APIKey = '&api_key=10b8f64a25a0d10f7ee2b929bb02aaea';
+  var settings = '&per_page=1&format=json&nojsoncallback=?&radius=0.005';
+  var data = '&lat=' + pos.latitude + '&lon=' + pos.longitude;
+  ajax({
+    url: URL + method + APIKey + settings + data,
+    type: 'json'
+  },
+  function(data) {
+    // Success Callback
+    console.log("Received flickr data: " + data);
+    var successCard = createCard('flickr: ' + data.photos.total);
+    successCard.show();
+  },
+  function(error) {
+    // Error callback
+    console.log('error: ' + error);
+  }
+
+  );
 }
 
 function main() {
-  var card = createCard('Geo Counter','Fetching...');
+  var card = createCard('Fetching...');
   card.show();
 
-  var location = getLocation();
-  if(location === undefined) {
-    var errorCard = new UI.Card({
-      title: 'Geo Counter',
-      subtitle: 'Error fetching Location'
-    });
-  } else {
-    var URL = 'http://api.flickr.com/services/rest/?&method=';
-    
-  }
+  getLocation();
 }
 
 main();

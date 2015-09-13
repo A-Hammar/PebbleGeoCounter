@@ -5,6 +5,7 @@
  */
 
 var UI = require('ui');
+var KEYS = require('keys');
 var ajax = require('ajax');
 
 var mainCard = new UI.Card({
@@ -47,7 +48,7 @@ function getLocation() {
 function requestImageNumbers(pos) {
   var URL = 'https://api.flickr.com/services/rest/?';
   var method = '&method=flickr.photos.search';
-  var APIKey = '&api_key=10b8f64a25a0d10f7ee2b929bb02aaea';
+  var APIKey = '&api_key=' + KEYS.flickr_KEY;
   var settings = '&per_page=1&format=json&nojsoncallback=?&radius=0.005';
   var data = '&lat=' + pos.latitude + '&lon=' + pos.longitude;
   ajax({

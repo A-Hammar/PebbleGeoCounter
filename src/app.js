@@ -7,12 +7,10 @@
 var UI = require('ui');
 var ajax = require('ajax');
 
-function createCard(subtitle) {
-  return new UI.Card({
+var mainCard = new UI.Card({
     title: 'Geo Counter',
-    subtitle: subtitle
+    body: 'Fetching location..'
   });
-}
 
 /**
 * Returns the current device location or undef
@@ -39,8 +37,8 @@ function getLocation() {
   
   // Location error callback
   function error(err) {
-    var errorCard = createCard('Error fetching Location');
-    errorCard.show();
+    mainCard.body('Error fetching Location');
+    //errorCard.show();
   }
   
   navigator.geolocation.getCurrentPosition(success, error, locationOptions);
@@ -59,8 +57,8 @@ function requestImageNumbers(pos) {
   function(data) {
     // Success Callback
     console.log("Received flickr data: " + data);
-    var successCard = createCard('flickr: ' + data.photos.total);
-    successCard.show();
+    mainCard.body('flickr: ' + data.photos.total);
+    //mainCard.show();
   },
   function(error) {
     // Error callback
@@ -71,8 +69,8 @@ function requestImageNumbers(pos) {
 }
 
 function main() {
-  var card = createCard('Fetching...');
-  card.show();
+  //var card = createCard('Fetching...');
+  mainCard.show();
 
   getLocation();
 }
